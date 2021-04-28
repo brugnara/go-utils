@@ -17,6 +17,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	oteltrace "go.opentelemetry.io/otel/trace"
+	"go.uber.org/zap"
 )
 
 var (
@@ -121,4 +122,35 @@ func GinMW() func(c *gin.Context) {
 			c.Header(k, v)
 		}
 	}
+}
+
+// GetTracingHeaders returns tracing headers computed from the given context
+func GetTracingHeaders(ctx context.Context, fromHeaders map[string]string) (headers map[string]string) {
+	if fromHeaders != nil {
+		headers = fromHeaders
+	} else {
+		headers = map[string]string{}
+	}
+	// not testable but makes sense:
+	if ctx == nil {
+		return
+	}
+	//
+	tmp := propagator.Propagator{}
+	propagation.TraceContext{}.Inject(ctx, tmp)
+	xray.Propagator{}.Inject(ctx, tmp)
+
+	for k, v := range tmp {
+		headers[k] = v
+	}
+
+	return
+}
+
+func DecorateLogger(ctx context.Context, logger *zap.Logger) *zap.Logger {
+	params := []zap.Field{}
+	for k, v := range GetTracingHeaders(ctx, nil) {
+		params = append(params, zap.String(k, v))
+	}
+	return logger.With(params...)
 }
