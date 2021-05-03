@@ -20,6 +20,10 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	fcmScope = "https://www.googleapis.com/auth/firebase.messaging"
+)
+
 var (
 	tracer        = otel.GetTracerProvider().Tracer("not-initialized")
 	isInitialized = false
@@ -122,6 +126,17 @@ func GinMW() func(c *gin.Context) {
 			c.Header(k, v)
 		}
 	}
+}
+
+// GetFCMHTTPClient returns an HttpClient able to performs requests setting a valid Authorization header
+func GetFCMHTTPClient(credentialsLocation string) *http.Client {
+	if isInitialized {
+		return &http.Client{
+			Transport: otelhttp.NewTransport(CustomFCMTransport(nil, credentialsLocation)),
+		}
+	}
+
+	return &http.Client{}
 }
 
 // GetTracingHeaders returns tracing headers computed from the given context
