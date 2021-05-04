@@ -129,10 +129,10 @@ func GinMW() func(c *gin.Context) {
 }
 
 // GetFCMHTTPClient returns an HttpClient able to performs requests setting a valid Authorization header
-func GetFCMHTTPClient(credentialsLocation string) *http.Client {
+func GetFCMHTTPClient(googleCredentials []byte) *http.Client {
 	if isInitialized {
 		return &http.Client{
-			Transport: otelhttp.NewTransport(CustomFCMTransport(nil, credentialsLocation)),
+			Transport: otelhttp.NewTransport(CustomFCMTransport(nil, googleCredentials)),
 		}
 	}
 

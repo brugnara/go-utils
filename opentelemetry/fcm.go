@@ -3,7 +3,6 @@ package opentelemetry
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"net/http"
 
 	"golang.org/x/oauth2"
@@ -13,7 +12,7 @@ import (
 // FCMTransport defines a httpTransport with a custom RoundTripper
 type FCMTransport struct {
 	T http.RoundTripper
-	CredentialsLocation string
+	GoogleCredentials []byte
 }
 
 // tokenProvider contains an oauth2.TokenSource used to get a valid fcm token
@@ -22,16 +21,16 @@ type tokenProvider struct {
 }
 
 // CustomFCMTransport returns a FCMTransport
-func CustomFCMTransport(T http.RoundTripper, credentialsLocation string) *FCMTransport {
+func CustomFCMTransport(T http.RoundTripper, googleCredentials []byte) *FCMTransport {
 	if T == nil {
 		T = http.DefaultTransport
 	}
-	return &FCMTransport{T, credentialsLocation}
+	return &FCMTransport{T, googleCredentials}
 }
 
 // RoundTrip defines a custom round trip for FCMTransport that asks for a valid FCM token
 func (adt *FCMTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	tp, err := newFCMTokenProvider(adt.CredentialsLocation)
+	tp, err := newFCMTokenProvider(adt.GoogleCredentials)
 	if err != nil {
 		return nil, err
 	}
@@ -44,12 +43,8 @@ func (adt *FCMTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 // newFCMTokenProvider gets a valid token for FCM
-func newFCMTokenProvider(credentialsLocation string) (*tokenProvider, error) {
-	jsonKey, err := ioutil.ReadFile(credentialsLocation)
-	if err != nil {
-		return nil, errors.New("fcm: failed to read credentials file at: " + credentialsLocation)
-	}
-	cfg, err := google.JWTConfigFromJSON(jsonKey, fcmScope)
+func newFCMTokenProvider(googleCredentials []byte) (*tokenProvider, error) {
+	cfg, err := google.JWTConfigFromJSON(googleCredentials, fcmScope)
 	if err != nil {
 		return nil, errors.New("fcm: failed to get JWT config for the firebase.messaging scope")
 	}
