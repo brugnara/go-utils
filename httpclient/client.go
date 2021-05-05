@@ -9,15 +9,21 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var traceEnabled = false
+var (
+	traceEnabled = false
+	userAgent = "DefaultAgent"
+)
 
 func New(opts Options) *resty.Client {
+	if opts.UserAgent != "" {
+		userAgent = opts.UserAgent
+	}
 	return resty.
 		NewWithClient(opts.HTTPClient).
 		SetLogger(opts.Logger).
 		SetTimeout(opts.Timeout).
 		SetRetryCount(opts.Retries).
-		SetHeader("User-Agent", GetUA()).
+		SetHeader("User-Agent", userAgent).
 		AddRetryCondition(RetryCondition()).
 		OnBeforeRequest(OnBeforeRequest(opts.Logger)).
 		OnAfterResponse(OnAfterResponse(opts.Logger)).
