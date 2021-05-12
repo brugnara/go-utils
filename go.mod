@@ -11,7 +11,9 @@ require (
 	go.opentelemetry.io/contrib/propagators/aws v0.18.0
 	go.opentelemetry.io/otel v0.18.0
 	go.opentelemetry.io/otel/exporters/otlp v0.18.0
+	go.opentelemetry.io/otel/metric v0.18.0 // indirect
 	go.opentelemetry.io/otel/sdk v0.18.0
+	go.opentelemetry.io/otel/sdk/metric v0.18.0 // indirect
 	go.opentelemetry.io/otel/trace v0.18.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be

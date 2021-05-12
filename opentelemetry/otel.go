@@ -3,6 +3,8 @@ package opentelemetry
 import (
 	"context"
 	"fmt"
+	"go.opentelemetry.io/otel/metric/global"
+	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
 	"net/http"
 	"time"
 
@@ -14,6 +16,8 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpgrpc"
 	"go.opentelemetry.io/otel/propagation"
+	controller "go.opentelemetry.io/otel/sdk/metric/controller/basic"
+	processor "go.opentelemetry.io/otel/sdk/metric/processor/basic"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	oteltrace "go.opentelemetry.io/otel/trace"
@@ -84,8 +88,29 @@ func Init(options *Options) (cleanup func()) {
 	tracer = otel.GetTracerProvider().Tracer(options.Name)
 	SetInitialized(true)
 
+	// Setup metrics
+	cont := controller.New(
+		processor.New(
+			simple.NewWithExactDistribution(),
+			exp,
+		),
+		controller.WithCollectPeriod(5*time.Second),
+		controller.WithPusher(exp),
+	)
+	global.SetMeterProvider(cont.MeterProvider())
+
+	if err := cont.Start(context.Background()); err != nil {
+		panic(fmt.Sprintf("Could not start metrics controller: %v", err))
+	}
+
 	return func() {
 		// cleanup
+		defer func() {
+			err := cont.Stop(context.Background())
+			if err != nil {
+				otel.Handle(err)
+			}
+		}()
 		defer func() {
 			ctx, cancel := context.WithTimeout(ctx, time.Second)
 			defer cancel()
