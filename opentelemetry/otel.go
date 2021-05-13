@@ -91,7 +91,7 @@ func Init(options *Options) (cleanup func()) {
 	// Setup metrics
 	cont := controller.New(
 		processor.New(
-			simple.NewWithExactDistribution(),
+			simple.NewWithHistogramDistribution(),
 			exp,
 		),
 		controller.WithCollectPeriod(5*time.Second),
