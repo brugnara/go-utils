@@ -1,4 +1,4 @@
-module github.com/lucademenego99/go-utils
+module github.com/SpazioDati/go-utils
 
 go 1.16
 
