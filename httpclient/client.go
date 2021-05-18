@@ -55,7 +55,7 @@ func OnAfterResponse(logger resty.Logger) resty.ResponseMiddleware {
 
 func OnError(logger resty.Logger) resty.ErrorHook {
 	return func(r *resty.Request, err error) {
-		Doer(logger, r.TraceInfo())
+		_ = Doer(logger, r.TraceInfo())
 	}
 }
 
