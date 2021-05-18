@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	. "github.com/lucademenego99/go-utils/opentelemetry"
-	"github.com/lucademenego99/go-utils/propagator"
+	. "github.com/SpazioDati/go-utils/opentelemetry"
+	"github.com/SpazioDati/go-utils/propagator"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel/attribute"

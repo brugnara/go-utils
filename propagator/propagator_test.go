@@ -3,7 +3,7 @@ package propagator_test
 import (
 	"testing"
 
-	"github.com/lucademenego99/go-utils/propagator"
+	"github.com/SpazioDati/go-utils/propagator"
 	"github.com/stretchr/testify/assert"
 )
 

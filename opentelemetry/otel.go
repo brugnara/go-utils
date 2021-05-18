@@ -3,13 +3,14 @@ package opentelemetry
 import (
 	"context"
 	"fmt"
-	"go.opentelemetry.io/otel/metric/global"
-	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
 	"net/http"
 	"time"
 
+	"go.opentelemetry.io/otel/metric/global"
+	"go.opentelemetry.io/otel/sdk/metric/selector/simple"
+
+	"github.com/SpazioDati/go-utils/propagator"
 	"github.com/gin-gonic/gin"
-	"github.com/lucademenego99/go-utils/propagator"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/contrib/propagators/aws/xray"
 	"go.opentelemetry.io/otel"
