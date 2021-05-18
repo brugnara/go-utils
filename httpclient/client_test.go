@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
-	. "github.com/lucademenego99/go-utils/httpclient"
+	. "github.com/SpazioDati/go-utils/httpclient"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,9 +22,10 @@ func TestNewClient(t *testing.T) {
 		Logger:     nil,
 		Timeout:    1 * time.Second,
 		Retries:    1,
+		UserAgent:  "foobar",
 	})
 
-	assert.Equal(client.Header.Get("User-Agent"), GetUA())
+	assert.Equal(client.Header.Get("User-Agent"), "foobar")
 	assert.Equal(client.RetryCount, 1)
 	assert.Equal(client.GetClient().Timeout, 1*time.Second)
 }
