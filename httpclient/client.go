@@ -9,21 +9,15 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var (
-	traceEnabled = false
-	userAgent = "DefaultAgent"
-)
+var traceEnabled = false
 
 func New(opts Options) *resty.Client {
-	if opts.UserAgent != "" {
-		userAgent = opts.UserAgent
-	}
 	return resty.
 		NewWithClient(opts.HTTPClient).
 		SetLogger(opts.Logger).
 		SetTimeout(opts.Timeout).
 		SetRetryCount(opts.Retries).
-		SetHeader("User-Agent", userAgent).
+		SetHeader("User-Agent", opts.UserAgent).
 		AddRetryCondition(RetryCondition()).
 		OnBeforeRequest(OnBeforeRequest(opts.Logger)).
 		OnAfterResponse(OnAfterResponse(opts.Logger)).
@@ -89,10 +83,6 @@ func Doer(logger resty.Logger, ti resty.TraceInfo) (err error) {
 	logger.Warnf("Resty TraceInfo: %v", hash)
 
 	return
-}
-
-func GetUA() string {
-	return userAgent
 }
 
 func RetryCondition() resty.RetryConditionFunc {
