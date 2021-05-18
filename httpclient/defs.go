@@ -12,5 +12,5 @@ type Options struct {
 	Logger     resty.Logger
 	Timeout    time.Duration
 	Retries    int
-	UserAgent string
+	UserAgent  string
 }
